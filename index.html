@@ -1,0 +1,1177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
+<meta name="theme-color" content="#c8960c">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Store Manager">
+<meta name="mobile-web-app-capable" content="yes">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="apple-touch-startup-image" href="icon-512.png">
+<title>Restaurant Store Manager</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0f0e09;--bg2:#1a1810;--card:#1e1c12;--card2:#252218;--border:#332f1e;
+  --gold:#c8960c;--gold2:#f0b429;--goldl:#ffd95a;
+  --green:#22c55e;--red:#ef4444;--purple:#a855f7;--blue:#3b82f6;--orange:#f97316;
+  --text:#f5f0e0;--muted:#7a7055;--muted2:#4a4535;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+body{font-family:'Poppins',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;}
+
+/* HEADER */
+.hdr{background:linear-gradient(135deg,#12100a,#1e1a0d);border-bottom:1px solid var(--border);padding:10px 14px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;box-shadow:0 2px 20px rgba(200,150,12,.15);}
+.hbrand{display:flex;align-items:center;gap:10px;}
+.hicon{width:42px;height:42px;background:linear-gradient(135deg,var(--gold),var(--gold2));border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.3rem;box-shadow:0 4px 12px rgba(200,150,12,.3);}
+.hname{font-size:1rem;font-weight:800;color:var(--gold2);}
+.hsub{font-size:.6rem;color:var(--muted);letter-spacing:1px;text-transform:uppercase;}
+.hright{text-align:right;}
+.hdate{font-size:.75rem;font-weight:600;color:var(--goldl);}
+.htime{font-size:.68rem;color:var(--muted);}
+
+/* INSTALL BAR */
+.ibar{display:none;background:linear-gradient(135deg,var(--gold),var(--gold2));padding:9px 14px;align-items:center;justify-content:space-between;gap:10px;}
+.ibar.show{display:flex;}
+.ibar span{font-size:.78rem;font-weight:600;color:#000;}
+.ibtn{background:#000;color:var(--gold2);border:none;border-radius:8px;padding:6px 14px;font-family:inherit;font-size:.76rem;font-weight:700;cursor:pointer;}
+.iclose{background:none;border:none;color:#000;font-size:1.1rem;cursor:pointer;opacity:.7;}
+
+/* OFFLINE */
+.obar{display:none;background:#7f1d1d;color:#fca5a5;text-align:center;padding:5px;font-size:.7rem;font-weight:600;}
+.obar.show{display:block;}
+
+/* TABS */
+.tabs{background:var(--bg2);border-bottom:1px solid var(--border);display:flex;overflow-x:auto;scrollbar-width:none;}
+.tabs::-webkit-scrollbar{display:none;}
+.tab{flex:1;min-width:64px;padding:10px 6px 8px;background:none;border:none;border-bottom:2px solid transparent;font-family:inherit;font-size:.62rem;font-weight:600;color:var(--muted);cursor:pointer;white-space:nowrap;transition:all .2s;display:flex;flex-direction:column;align-items:center;gap:2px;}
+.tab .ti{font-size:.95rem;}
+.tab.active{color:var(--gold2);border-bottom-color:var(--gold2);}
+#tabLow.has-items{color:var(--orange);}
+
+/* MAIN */
+.main{padding:12px 10px 24px;max-width:700px;margin:0 auto;}
+.sec{display:none;}
+.sec.active{display:block;}
+
+/* STATS */
+.srow{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px;}
+.scard{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:10px;text-align:center;}
+.snum{font-size:1.3rem;font-weight:800;}
+.slbl{font-size:.6rem;color:var(--muted);margin-top:2px;}
+
+/* SEARCH */
+.swrap{position:relative;margin-bottom:10px;}
+.swrap input{width:100%;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:10px 14px 10px 38px;font-family:inherit;font-size:.86rem;color:var(--text);outline:none;}
+.swrap input:focus{border-color:var(--gold);}
+.swrap input::placeholder{color:var(--muted);}
+.sico{position:absolute;left:12px;top:50%;transform:translateY(-50%);font-size:.95rem;}
+
+/* CAT CHIPS */
+.chips{display:flex;gap:6px;overflow-x:auto;padding-bottom:4px;margin-bottom:10px;scrollbar-width:none;}
+.chips::-webkit-scrollbar{display:none;}
+.chip{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:5px 12px;font-family:inherit;font-size:.7rem;color:var(--muted);cursor:pointer;white-space:nowrap;transition:all .2s;}
+.chip.on{background:var(--gold);border-color:var(--gold);color:#000;font-weight:700;}
+
+/* CAT HEADER */
+.cath{font-size:.62rem;font-weight:700;letter-spacing:1.5px;color:var(--gold);text-transform:uppercase;margin:14px 0 8px;padding-bottom:5px;border-bottom:1px solid var(--border);}
+
+/* ITEM CARD */
+.icard{background:var(--card);border:1px solid var(--border);border-radius:14px;margin-bottom:10px;overflow:hidden;}
+.icard.low{border-color:rgba(249,115,22,.4);}
+.icard.zero{border-color:var(--border);opacity:.7;}
+
+/* ITEM TOP */
+.itop{padding:9px 12px 6px;display:flex;align-items:flex-start;justify-content:space-between;}
+.ileft{flex:1;}
+.inum{font-size:.58rem;color:var(--muted);margin-bottom:1px;}
+.iname{font-size:.86rem;font-weight:700;line-height:1.2;}
+.iroman{font-size:.65rem;color:var(--muted);margin-top:1px;}
+.ibadges{display:flex;gap:5px;margin-top:3px;}
+.blow{background:#7f1d1d;color:#fca5a5;font-size:.56rem;font-weight:700;padding:2px 6px;border-radius:4px;}
+.bzero{background:#292524;color:#78716c;font-size:.56rem;font-weight:700;padding:2px 6px;border-radius:4px;}
+.iright{text-align:right;min-width:50px;cursor:pointer;}
+.iqty{font-size:1.3rem;font-weight:800;line-height:1;color:var(--gold2);}
+.iqty.z{color:var(--red);}
+.iunit{font-size:.6rem;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;}
+
+/* PURCHASE/USE ROW */
+.iact{display:flex;align-items:center;gap:5px;padding:5px 10px 6px;}
+.qin{width:58px;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:7px 5px;font-family:inherit;font-size:.85rem;color:var(--text);outline:none;text-align:center;}
+.qin:focus{border-color:var(--gold);}
+.qin::placeholder{color:var(--muted2);font-size:.68rem;}
+.bpur{flex:1;background:var(--green);color:#fff;border:none;border-radius:8px;padding:8px 4px;font-family:inherit;font-size:.7rem;font-weight:700;cursor:pointer;}
+.bpur:active{opacity:.85;}
+.buse{flex:1;background:var(--red);color:#fff;border:none;border-radius:8px;padding:8px 4px;font-family:inherit;font-size:.7rem;font-weight:700;cursor:pointer;}
+.buse:active{opacity:.85;}
+
+/* MIN LIMIT ROW */
+.ilim{display:flex;align-items:center;gap:5px;padding:0 10px 5px;font-size:.65rem;color:var(--muted);}
+.lin{width:50px;background:var(--bg);border:1px solid var(--border);border-radius:7px;padding:4px 5px;font-family:inherit;font-size:.76rem;color:var(--text);outline:none;text-align:center;}
+.lin:focus{border-color:var(--gold);}
+
+/* CLOSING ROW — inside item card */
+.iclosing{border-top:1px solid var(--border);background:rgba(168,85,247,.06);padding:6px 10px 9px;}
+.iclbl{font-size:.58rem;font-weight:700;color:var(--purple);letter-spacing:.5px;margin-bottom:5px;display:flex;justify-content:space-between;align-items:center;}
+.iclbl span{color:var(--muted);font-weight:400;font-size:.57rem;}
+.iclbl strong{color:var(--gold2);}
+.iclrow{display:grid;grid-template-columns:1fr 1fr;gap:6px;}
+.clin{width:100%;background:var(--bg);border:1px solid rgba(168,85,247,.35);border-radius:8px;padding:9px 10px;font-family:inherit;font-size:.9rem;color:var(--text);outline:none;text-align:center;}
+.clin:focus{border-color:var(--purple);}
+.clin::placeholder{color:var(--muted2);font-size:.72rem;text-align:center;}
+.bclose{width:100%;background:linear-gradient(135deg,var(--purple),#7c3aed);color:#fff;border:none;border-radius:8px;padding:9px 6px;font-family:inherit;font-size:.76rem;font-weight:700;cursor:pointer;}
+.bclose:active{opacity:.85;}
+
+/* HISTORY */
+.hitem{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:10px 13px;margin-bottom:7px;display:flex;justify-content:space-between;align-items:center;}
+.hname{font-size:.83rem;font-weight:700;}
+.hmeta{font-size:.65rem;color:var(--muted);margin-top:2px;}
+.htype{font-size:.65rem;font-weight:600;margin-top:3px;}
+.hqty{font-size:.95rem;font-weight:800;text-align:right;}
+.hqty.p{color:var(--green);}
+.hqty.u{color:var(--red);}
+.hqty.c{color:var(--purple);}
+.hdel{background:none;border:none;color:var(--muted);font-size:.88rem;cursor:pointer;padding:4px;display:block;margin-top:3px;}
+
+/* LOW STOCK TAB */
+.lscard{background:var(--card);border:1px solid rgba(239,68,68,.3);border-radius:12px;padding:12px 14px;margin-bottom:8px;display:flex;align-items:center;justify-content:space-between;}
+.lscard.warn{border-color:rgba(249,115,22,.3);}
+.lsname{font-size:.86rem;font-weight:700;}
+.lsmeta{font-size:.66rem;color:var(--muted);margin-top:2px;}
+.lsqty{font-size:1.05rem;font-weight:800;text-align:right;}
+.lsqty.red{color:var(--red);}
+.lsqty.ora{color:var(--orange);}
+.lsmin{font-size:.62rem;color:var(--muted);margin-top:2px;}
+.pbar{background:var(--bg);border-radius:6px;height:5px;overflow:hidden;margin-top:5px;}
+.pbar-fill{background:var(--orange);height:100%;border-radius:6px;transition:width .3s;}
+
+/* SUMMARY */
+.smcard{background:var(--card);border:1px solid var(--border);border-radius:13px;padding:14px;margin-bottom:10px;}
+.smtitle{font-size:.76rem;font-weight:700;color:var(--gold2);margin-bottom:9px;border-bottom:1px solid var(--border);padding-bottom:6px;}
+.smrow{display:flex;justify-content:space-between;align-items:center;padding:4px 0;font-size:.78rem;border-bottom:1px solid rgba(255,255,255,.03);}
+.smrow:last-child{border-bottom:none;}
+.smval{font-weight:700;}
+
+/* ADD ITEM */
+.fcard{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:15px;margin-bottom:12px;}
+.ftitle{font-size:.83rem;font-weight:700;color:var(--gold2);margin-bottom:13px;}
+.ig{margin-bottom:10px;}
+.il{font-size:.7rem;color:var(--muted);margin-bottom:4px;display:block;font-weight:500;}
+.ifield{width:100%;background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:9px 12px;font-family:inherit;font-size:.88rem;color:var(--text);outline:none;}
+.ifield:focus{border-color:var(--gold);}
+select.ifield{cursor:pointer;}
+select.ifield option{background:#1e1c12;}
+.ugrid{display:grid;grid-template-columns:repeat(3,1fr);gap:5px;margin-bottom:11px;}
+.ubtn{background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:7px 4px;font-family:inherit;font-size:.72rem;color:var(--muted);cursor:pointer;text-align:center;}
+.ubtn.on{background:var(--gold);border-color:var(--gold);color:#000;font-weight:700;}
+
+/* EXPORT */
+.excard{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:15px;margin-bottom:12px;}
+.extitle{font-size:.83rem;font-weight:700;color:var(--gold2);margin-bottom:4px;}
+.exdesc{font-size:.72rem;color:var(--muted);margin-bottom:11px;line-height:1.5;}
+
+/* BUTTONS */
+.btn{width:100%;padding:12px;border:none;border-radius:12px;font-family:inherit;font-size:.9rem;font-weight:700;cursor:pointer;transition:all .15s;margin-top:5px;}
+.btn:active{transform:scale(.98);}
+.bgold{background:linear-gradient(135deg,var(--gold),var(--gold2));color:#000;}
+.bgreen{background:var(--green);color:#fff;}
+.bred2{background:var(--red);color:#fff;}
+.bblue{background:var(--blue);color:#fff;}
+.bmut{background:var(--card2);color:var(--muted);border:1px solid var(--border);margin-top:8px;}
+.bsm{padding:8px 13px;font-size:.76rem;border-radius:9px;border:none;font-family:inherit;font-weight:700;cursor:pointer;}
+
+/* OVERLAY */
+.ov{display:none;position:fixed;inset:0;z-index:300;background:rgba(0,0,0,.9);backdrop-filter:blur(4px);justify-content:center;align-items:flex-end;}
+.ov.open{display:flex;}
+.sheet{background:var(--card2);border-radius:20px 20px 0 0;border:1px solid var(--border);border-bottom:none;width:100%;max-width:600px;padding:18px 14px 28px;max-height:90vh;overflow-y:auto;animation:sup .27s ease;}
+@keyframes sup{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.shdl{width:36px;height:4px;background:var(--border);border-radius:2px;margin:0 auto 14px;}
+.shtitle{font-size:.98rem;font-weight:800;margin-bottom:11px;color:var(--gold2);}
+.pwin{width:100%;text-align:center;font-size:1.5rem;letter-spacing:10px;background:var(--bg);border:1px solid var(--border);border-radius:12px;padding:11px;font-family:inherit;color:var(--text);outline:none;}
+.pwin:focus{border-color:var(--gold);}
+
+/* AI */
+.ail{display:flex;align-items:center;gap:8px;color:var(--muted);font-size:.78rem;padding:12px 0;}
+.aidot{width:7px;height:7px;border-radius:50%;background:var(--gold);animation:pu 1s infinite;}
+.aidot:nth-child(2){animation-delay:.2s}.aidot:nth-child(3){animation-delay:.4s}
+@keyframes pu{0%,100%{opacity:.3}50%{opacity:1}}
+.aibox{background:var(--bg);border-radius:10px;padding:11px;font-size:.78rem;line-height:1.7;color:#ccc;margin-top:7px;}
+
+/* CHAT */
+
+/* TOAST */
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--card2);border:1px solid var(--border);border-radius:12px;padding:8px 18px;font-size:.8rem;z-index:500;opacity:0;transition:all .3s;pointer-events:none;white-space:nowrap;box-shadow:0 8px 30px rgba(0,0,0,.5);}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+.toast.ok{border-color:var(--green);color:var(--green);}
+.toast.err{border-color:var(--red);color:var(--red);}
+
+/* SECTION HEADER */
+.sechdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:11px;}
+.sechdr h2{font-size:.9rem;font-weight:800;}
+</style>
+</head>
+<body>
+
+<div class="obar" id="obar">📵 Offline — Stock chal raha hai, AI nahi chalega</div>
+<div class="ibar" id="ibar">
+  <span>📲 App install karein!</span>
+  <button class="ibtn" onclick="installApp()">Install</button>
+  <button class="iclose" onclick="document.getElementById('ibar').classList.remove('show')">✕</button>
+</div>
+
+<div class="hdr">
+  <div class="hbrand">
+    <div class="hicon">🍽️</div>
+    <div><div class="hname">Soulful Bites</div><div class="hsub">Store Manager</div></div>
+  </div>
+  <div class="hright">
+    <div class="hdate" id="hDate"></div>
+    <div class="htime" id="hTime"></div>
+  </div>
+</div>
+
+<div class="tabs">
+  <button class="tab active" onclick="showTab('stock',this)"><span class="ti">📦</span>Stock</button>
+  <button class="tab" id="tabLow" onclick="showTab('lowstock',this)"><span class="ti">⚠️</span>Kam Stock</button>
+  <button class="tab" onclick="showTab('history',this)"><span class="ti">📋</span>History</button>
+  <button class="tab" onclick="showTab('summary',this)"><span class="ti">📊</span>Summary</button>
+  <button class="tab" onclick="showTab('items',this)"><span class="ti">➕</span>Items</button>
+
+</div>
+
+<div class="main">
+
+<!-- STOCK -->
+<div class="sec active" id="sec-stock">
+  <div class="srow">
+    <div class="scard"><div class="snum" style="color:var(--gold2)" id="stTotal">0</div><div class="slbl">Total Items</div></div>
+    <div class="scard"><div class="snum" style="color:var(--green)" id="stPur">0</div><div class="slbl">Aaj Purchase</div></div>
+    <div class="scard"><div class="snum" style="color:var(--red)" id="stUse">0</div><div class="slbl">Aaj Use</div></div>
+  </div>
+  <div class="swrap"><span class="sico">🔍</span><input type="text" id="srch" placeholder="Search items..." oninput="renderStock()"></div>
+  <div class="chips" id="chips"></div>
+  <div id="stockList"></div>
+</div>
+
+<!-- KAM STOCK -->
+<div class="sec" id="sec-lowstock">
+  <div style="background:var(--card);border:1px solid var(--border);border-radius:13px;padding:13px;margin-bottom:13px;">
+    <div style="font-size:.83rem;font-weight:700;color:var(--orange);margin-bottom:3px;">⚠️ Kam aur Khatam Items</div>
+    <div style="font-size:.72rem;color:var(--muted);line-height:1.5;">Sirf woh items jo min limit se kam hain ya bilkul khatam hain</div>
+  </div>
+  <div id="lowList"></div>
+</div>
+
+<!-- HISTORY -->
+<div class="sec" id="sec-history">
+  <div class="sechdr">
+    <h2>📋 History</h2>
+    <div style="display:flex;gap:7px;">
+      <select id="hfilt" onchange="renderHistory()" style="background:var(--card);border:1px solid var(--border);border-radius:8px;padding:5px 9px;font-family:inherit;font-size:.72rem;color:var(--text);outline:none;">
+        <option value="all">Sab</option>
+        <option value="purchase">Purchase</option>
+        <option value="use">Use</option>
+        <option value="closing">Closing</option>
+      </select>
+      <button onclick="askDelAll()" class="bsm bred2">🗑️ Delete</button>
+    </div>
+  </div>
+  <div id="histList"></div>
+</div>
+
+<!-- SUMMARY -->
+<div class="sec" id="sec-summary">
+  <div class="sechdr">
+    <h2>📊 Summary</h2>
+    <div style="display:flex;gap:6px;">
+      <button onclick="copyReport()" class="bsm" style="background:var(--gold);color:#000;">📋 Copy</button>
+      <button onclick="exportExcel()" class="bsm" style="background:#1d6f42;color:#fff;">📊 Excel</button>
+      <button onclick="exportPDF()" class="bsm" style="background:#c0392b;color:#fff;">📄 PDF</button>
+    </div>
+  </div>
+  <!-- Filter buttons -->
+  <div style="display:flex;gap:7px;margin-bottom:12px;">
+    <button id="sfAll" onclick="setSumFilter('all')" style="flex:1;padding:9px 6px;border-radius:10px;border:none;font-family:inherit;font-size:.72rem;font-weight:700;cursor:pointer;background:var(--gold);color:#000;">📊 Sab</button>
+    <button id="sfPur" onclick="setSumFilter('purchase')" style="flex:1;padding:9px 6px;border-radius:10px;border:1px solid var(--border);font-family:inherit;font-size:.72rem;font-weight:700;cursor:pointer;background:var(--card);color:var(--green);">➕ Aaj Purchase</button>
+    <button id="sfUse" onclick="setSumFilter('use')" style="flex:1;padding:9px 6px;border-radius:10px;border:1px solid var(--border);font-family:inherit;font-size:.72rem;font-weight:700;cursor:pointer;background:var(--card);color:var(--red);">➖ Aaj Use</button>
+  </div>
+  <!-- Export type selector -->
+  <div id="exportTypeSel" style="display:none;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:12px;margin-bottom:12px;">
+    <div style="font-size:.78rem;font-weight:700;color:var(--gold2);margin-bottom:9px;">📤 Export Type Chunein:</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:7px;">
+      <button onclick="doExport('today','excel')" style="background:var(--card2);border:1px solid var(--border);border-radius:9px;padding:10px 7px;font-family:inherit;font-size:.72rem;color:var(--text);cursor:pointer;font-weight:600;">📅 Aaj ka Hisab<br><span style='color:var(--muted);font-weight:400;font-size:.65rem;'>Purchase, Use, Closing</span></button>
+      <button onclick="doExport('stock','excel')" style="background:var(--card2);border:1px solid var(--border);border-radius:9px;padding:10px 7px;font-family:inherit;font-size:.72rem;color:var(--text);cursor:pointer;font-weight:600;">📦 Poora Stock<br><span style='color:var(--muted);font-weight:400;font-size:.65rem;'>Abhi ka bacha hua</span></button>
+    </div>
+    <button onclick="document.getElementById('exportTypeSel').style.display='none'" style="margin-top:8px;width:100%;background:none;border:1px solid var(--border);border-radius:8px;padding:7px;font-family:inherit;font-size:.72rem;color:var(--muted);cursor:pointer;">✕ Cancel</button>
+  </div>
+  <div id="sumContent"></div>
+</div>
+
+<!-- ITEMS -->
+<div class="sec" id="sec-items">
+  <div class="fcard">
+    <div class="ftitle">➕ Naya Item Add Karo</div>
+    <div class="ig"><label class="il">Item Naam *</label><input type="text" class="ifield" id="niName" placeholder="Jaise: Atta, Chicken, Tel..."></div>
+    <div class="ig"><label class="il">Roman Urdu Naam</label><input type="text" class="ifield" id="niRoman" placeholder="Jaise: Fine Ata, Cooking Oil..."></div>
+    <div class="ig"><label class="il">Category *</label>
+      <select class="ifield" id="niCat">
+        <option value="Meat & Seafood">🥩 Meat & Seafood</option>
+        <option value="Vegetables">🥗 Vegetables</option>
+        <option value="Grains & Flour">🌾 Grains & Flour</option>
+        <option value="Spices & Herbs">🌶️ Spices & Herbs</option>
+        <option value="Oils & Dairy">🧴 Oils & Dairy</option>
+        <option value="Drinks">🥤 Drinks</option>
+        <option value="Dry Fruits & Nuts">🥜 Dry Fruits & Nuts</option>
+        <option value="Packaging">📦 Packaging</option>
+        <option value="Pasta & Sauces">🍝 Pasta & Sauces</option>
+        <option value="Fruits">🍓 Fruits</option>
+        <option value="Other">📌 Other</option>
+      </select>
+    </div>
+    <div class="ig"><label class="il">Shuru ki Quantity</label><input type="number" class="ifield" id="niQty" placeholder="0" min="0" step="0.001"></div>
+    <div class="ig">
+      <label class="il">Unit:</label>
+      <div class="ugrid">
+        <button class="ubtn on" onclick="selU(this,'kg')">⚖️ kg</button>
+        <button class="ubtn" onclick="selU(this,'g')">🔬 g</button>
+        <button class="ubtn" onclick="selU(this,'Liter')">💧 Liter</button>
+        <button class="ubtn" onclick="selU(this,'pcs')">🔢 pcs</button>
+        <button class="ubtn" onclick="selU(this,'pkt')">📦 pkt</button>
+        <button class="ubtn" onclick="selU(this,'bottle')">🍾 bottle</button>
+        <button class="ubtn" onclick="selU(this,'can')">🥫 can</button>
+        <button class="ubtn" onclick="selU(this,'box')">📫 box</button>
+        <button class="ubtn" onclick="selU(this,'pack')">🗃️ pack</button>
+      </div>
+    </div>
+    <div class="ig"><label class="il">Min Limit (alert ke liye)</label><input type="number" class="ifield" id="niLim" placeholder="0" min="0" step="0.01"></div>
+    <button class="btn bgold" onclick="addItem()">✅ Item Add Karo</button>
+  </div>
+  <div class="excard">
+    <div class="extitle">📤 Data Export / Backup</div>
+    <div class="exdesc">Poora data backup karein. Agar kabhi app ka data delete ho jaaye to import se wapas la sakte hain.</div>
+    <button class="btn bblue" onclick="exportData()">📤 Export (Backup)</button>
+    <button class="btn bgreen" onclick="document.getElementById('impFile').click()" style="margin-top:8px;">📥 Import (Restore)</button>
+    <input type="file" id="impFile" accept=".json" style="display:none" onchange="importData(event)">
+  </div>
+</div>
+
+
+</div><!-- /main -->
+
+<!-- PASSWORD OVERLAY -->
+<div class="ov" id="pwdOv">
+  <div class="sheet">
+    <div class="shdl"></div>
+    <div class="shtitle">🔐 Password</div>
+    <p style="font-size:.78rem;color:var(--muted);margin-bottom:11px;">Delete karne ke liye password chahiye.</p>
+    <input type="password" class="pwin" id="pwdIn" placeholder="••••" maxlength="4" onkeypress="if(event.key==='Enter')checkPwd()">
+    <button class="btn bred2" onclick="checkPwd()" style="margin-top:11px;">🗑️ Delete Karo</button>
+    <button class="btn bmut" onclick="closeOv('pwdOv')">❌ Cancel</button>
+  </div>
+</div>
+
+<!-- DETAIL OVERLAY -->
+<div class="ov" id="detOv">
+  <div class="sheet">
+    <div class="shdl"></div>
+    <div id="detContent"></div>
+    <button class="btn bmut" onclick="closeOv('detOv')">← Wapas</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ===== CONSTANTS =====
+const PWD='0000';
+const CE={'Meat & Seafood':'🥩','Vegetables':'🥗','Grains & Flour':'🌾','Spices & Herbs':'🌶️','Oils & Dairy':'🧴','Drinks':'🥤','Dry Fruits & Nuts':'🥜','Packaging':'📦','Pasta & Sauces':'🍝','Fruits':'🍓','Other':'📌'};
+
+let unitVal='kg', activeCat='All', pendingId=null, pendingAll=false, deferredPrompt=null, isOnline=navigator.onLine;
+
+// ===== DEFAULT ITEMS =====
+const DEFAULTS=[
+  {id:'cooking_oil',name:'Cooking Oil',roman:'Cooking Oil',cat:'Oils & Dairy',qty:26,unit:'kg',emoji:'🛢️',minLimit:2},
+  {id:'ghee',name:'Ghee',roman:'Ghee',cat:'Oils & Dairy',qty:3,unit:'kg',emoji:'🧈',minLimit:1},
+  {id:'butter',name:'Butter',roman:'Butter',cat:'Oils & Dairy',qty:760,unit:'g',emoji:'🧈',minLimit:100},
+  {id:'yogurt',name:'Yogurt',roman:'Dahi',cat:'Oils & Dairy',qty:4,unit:'kg',emoji:'🥛',minLimit:1},
+  {id:'milk_pow',name:'Milk Powder',roman:'Milk Pow',cat:'Oils & Dairy',qty:500,unit:'g',emoji:'🥛',minLimit:100},
+  {id:'cream',name:'Cream',roman:'Cream',cat:'Oils & Dairy',qty:2,unit:'pkt',emoji:'🥛',minLimit:1},
+  {id:'olpers',name:"Olper's Milk",roman:"Olpers Milk",cat:'Oils & Dairy',qty:38,unit:'pkt',emoji:'🥛',minLimit:5},
+  {id:'fresh_milk',name:'Fresh Milk',roman:'Fresh Milk',cat:'Oils & Dairy',qty:4,unit:'kg',emoji:'🥛',minLimit:1},
+  {id:'season_oil',name:'Season Oil',roman:'Season Oil',cat:'Oils & Dairy',qty:0,unit:'Liter',emoji:'🛢️',minLimit:1},
+  {id:'mutton',name:'Mutton',roman:'Mutton',cat:'Meat & Seafood',qty:2.5,unit:'kg',emoji:'🥩',minLimit:1},
+  {id:'chicken_w',name:'Whole Chicken',roman:'Whole Chicken',cat:'Meat & Seafood',qty:8.6,unit:'kg',emoji:'🍗',minLimit:2},
+  {id:'boneless',name:'Boneless Chicken',roman:'Boneless Chiken',cat:'Meat & Seafood',qty:0,unit:'kg',emoji:'🍗',minLimit:2},
+  {id:'fish',name:'Fish',roman:'Machli',cat:'Meat & Seafood',qty:600,unit:'g',emoji:'🐟',minLimit:200},
+  {id:'eggs',name:'Eggs',roman:'Anday',cat:'Meat & Seafood',qty:13,unit:'pcs',emoji:'🥚',minLimit:6},
+  {id:'prawn',name:'Prawn',roman:'Jheenga',cat:'Meat & Seafood',qty:0,unit:'kg',emoji:'🦐',minLimit:1},
+  {id:'hotdog',name:'Hotdog',roman:'Hotdog',cat:'Meat & Seafood',qty:0,unit:'pcs',emoji:'🌭',minLimit:5},
+  {id:'rice_sela',name:'Rice Sela',roman:'Rice Sela',cat:'Grains & Flour',qty:25,unit:'kg',emoji:'🍚',minLimit:5},
+  {id:'rice_bsm',name:'Rice Basmati',roman:'Rice Basmati',cat:'Grains & Flour',qty:3,unit:'kg',emoji:'🍚',minLimit:2},
+  {id:'atta',name:'Fine Flour (Atta)',roman:'Fine Ata',cat:'Grains & Flour',qty:10,unit:'kg',emoji:'🌾',minLimit:3},
+  {id:'maida',name:'Maida',roman:'Maida',cat:'Grains & Flour',qty:12.5,unit:'kg',emoji:'🌾',minLimit:3},
+  {id:'beson',name:'Gram Flour (Beson)',roman:'Beson',cat:'Grains & Flour',qty:725,unit:'g',emoji:'🌾',minLimit:100},
+  {id:'fries',name:'Fries',roman:'Fries',cat:'Grains & Flour',qty:7.25,unit:'kg',emoji:'🍟',minLimit:2},
+  {id:'sugar',name:'Sugar (Cheeni)',roman:'Cheeni',cat:'Grains & Flour',qty:5.4,unit:'kg',emoji:'🍬',minLimit:2},
+  {id:'cornflour',name:'Corn Flour',roman:'Corn Flour',cat:'Grains & Flour',qty:2,unit:'kg',emoji:'🌽',minLimit:0.5},
+  {id:'bread',name:'Bread',roman:'Bread',cat:'Grains & Flour',qty:0,unit:'pcs',emoji:'🍞',minLimit:5},
+  {id:'bun',name:'Burger Bun',roman:'Burger Bun',cat:'Grains & Flour',qty:0,unit:'pcs',emoji:'🍔',minLimit:5},
+  {id:'sbread',name:'Sandwich Bread',roman:'Sandwich Bread',cat:'Grains & Flour',qty:0,unit:'pcs',emoji:'🥪',minLimit:5},
+  {id:'bcrumbs',name:'Breadcrumbs',roman:'Breadcrumbs',cat:'Grains & Flour',qty:0,unit:'kg',emoji:'🌾',minLimit:0.5},
+  {id:'dhaniya_w',name:'Coriander Whole',roman:'Dhaniya Whole',cat:'Spices & Herbs',qty:700,unit:'g',emoji:'🌿',minLimit:100},
+  {id:'salt_nat',name:'National Salt',roman:'Salt National',cat:'Spices & Herbs',qty:15,unit:'pkt',emoji:'🧂',minLimit:3},
+  {id:'oregano',name:'Oregano',roman:'Oregano',cat:'Spices & Herbs',qty:500,unit:'g',emoji:'🌿',minLimit:100},
+  {id:'oregano2',name:'Oregano Extra',roman:'Oregano Extra',cat:'Spices & Herbs',qty:900,unit:'g',emoji:'🌿',minLimit:100},
+  {id:'chkpow',name:'Chicken Powder',roman:'Chiken Pow',cat:'Spices & Herbs',qty:1.25,unit:'kg',emoji:'🌶️',minLimit:0.3},
+  {id:'lahori',name:'Lahori Salt',roman:'Lahori Namak',cat:'Spices & Herbs',qty:3.3,unit:'kg',emoji:'🧂',minLimit:1},
+  {id:'bsoda',name:'Baking Soda',roman:'Baking Soda',cat:'Spices & Herbs',qty:1.9,unit:'kg',emoji:'🥄',minLimit:0.5},
+  {id:'bpow',name:'Baking Powder',roman:'Baking Pow',cat:'Spices & Herbs',qty:1,unit:'kg',emoji:'🥄',minLimit:0.3},
+  {id:'tang',name:'Tang',roman:'Tang',cat:'Spices & Herbs',qty:375,unit:'g',emoji:'🍊',minLimit:100},
+  {id:'imli',name:'Tamarind (Imli)',roman:'Imli',cat:'Spices & Herbs',qty:3.5,unit:'kg',emoji:'🌿',minLimit:1},
+  {id:'darchini',name:'Cinnamon (Dar Chini)',roman:'Dar Chini',cat:'Spices & Herbs',qty:355,unit:'g',emoji:'🌿',minLimit:50},
+  {id:'abukhara',name:'Dried Plums (Aloo Bukhara)',roman:'Aloo Bukhara',cat:'Spices & Herbs',qty:3,unit:'kg',emoji:'🫐',minLimit:0.5},
+  {id:'crushchili',name:'Crushed Chili',roman:'Crush Chilli',cat:'Spices & Herbs',qty:2.7,unit:'kg',emoji:'🌶️',minLimit:0.5},
+  {id:'lalmirch',name:'Red Chili Powder',roman:'Lal Mirch Pow',cat:'Spices & Herbs',qty:700,unit:'g',emoji:'🌶️',minLimit:100},
+  {id:'goliamirch',name:'Round Red Chili',roman:'Golia Mirch',cat:'Spices & Herbs',qty:2.4,unit:'kg',emoji:'🌶️',minLimit:0.5},
+  {id:'ajwain',name:'Carom Seeds (Ajwain)',roman:'Ajwain',cat:'Spices & Herbs',qty:1.8,unit:'kg',emoji:'🌿',minLimit:0.3},
+  {id:'tezpatti',name:'Bay Leaf (Tez Patti)',roman:'Tez Patti',cat:'Spices & Herbs',qty:350,unit:'g',emoji:'🍃',minLimit:50},
+  {id:'paprika',name:'Paprika',roman:'Paprika',cat:'Spices & Herbs',qty:50,unit:'g',emoji:'🌶️',minLimit:20},
+  {id:'tezpatta',name:'Bay Leaf Large (Tez Patta)',roman:'Tez Patta',cat:'Spices & Herbs',qty:800,unit:'g',emoji:'🍃',minLimit:100},
+  {id:'cilaichi',name:'Green Cardamom',roman:'Choti Ilaichi',cat:'Spices & Herbs',qty:190,unit:'g',emoji:'🌿',minLimit:50},
+  {id:'long',name:'Cloves (Long)',roman:'Long',cat:'Spices & Herbs',qty:1.45,unit:'kg',emoji:'🌿',minLimit:0.2},
+  {id:'jaifal',name:'Nutmeg (Jaifal)',roman:'Jaifal',cat:'Spices & Herbs',qty:210,unit:'g',emoji:'🌿',minLimit:50},
+  {id:'sonf',name:'Fennel Seeds (Sonf)',roman:'Sonf',cat:'Spices & Herbs',qty:500,unit:'g',emoji:'🌿',minLimit:100},
+  {id:'bilaichi',name:'Black Cardamom',roman:'Bari Ilaichi',cat:'Spices & Herbs',qty:660,unit:'g',emoji:'🌿',minLimit:100},
+  {id:'drylemon',name:'Dried Lemon',roman:'Sukha Nimbu',cat:'Spices & Herbs',qty:160,unit:'g',emoji:'🍋',minLimit:30},
+  {id:'dhanpow',name:'Coriander Powder',roman:'Dhaniya Pow',cat:'Spices & Herbs',qty:1.5,unit:'kg',emoji:'🌿',minLimit:0.3},
+  {id:'blkpepper',name:'Black Pepper',roman:'Black Paper',cat:'Spices & Herbs',qty:1.7,unit:'kg',emoji:'🌿',minLimit:0.3},
+  {id:'jawatri',name:'Mace (Jawatri)',roman:'Jawatri',cat:'Spices & Herbs',qty:630,unit:'g',emoji:'🌿',minLimit:100},
+  {id:'lehsonpow',name:'Garlic Powder',roman:'Lehson Powder',cat:'Spices & Herbs',qty:250,unit:'g',emoji:'🌿',minLimit:50},
+  {id:'adrakpow',name:'Ginger Powder',roman:'Adrak Pow',cat:'Spices & Herbs',qty:250,unit:'g',emoji:'🌿',minLimit:50},
+  {id:'kashripow',name:'Kachri Powder',roman:'Kashri Pow',cat:'Spices & Herbs',qty:950,unit:'g',emoji:'🌿',minLimit:100},
+  {id:'haldi',name:'Turmeric (Haldi)',roman:'Haldi',cat:'Spices & Herbs',qty:1,unit:'kg',emoji:'🌿',minLimit:0.3},
+  {id:'yeast',name:'Yeast',roman:'Yeast',cat:'Spices & Herbs',qty:450,unit:'g',emoji:'🥄',minLimit:100},
+  {id:'mustardpow',name:'Mustard Powder',roman:'Mustard Pow',cat:'Spices & Herbs',qty:2,unit:'kg',emoji:'🌿',minLimit:0.3},
+  {id:'wholeredchili',name:'Whole Red Chili',roman:'Sabut Lal Mirch',cat:'Spices & Herbs',qty:0,unit:'kg',emoji:'🌶️',minLimit:0.5},
+  {id:'spaghetti',name:'Spaghetti',roman:'Spegetti',cat:'Pasta & Sauces',qty:0,unit:'kg',emoji:'🍝',minLimit:0.5},
+  {id:'penne',name:'Penne Pasta',roman:'Penne',cat:'Pasta & Sauces',qty:1,unit:'kg',emoji:'🍝',minLimit:0.5},
+  {id:'lasagne',name:'Lasagna Pasta',roman:'Lasagne',cat:'Pasta & Sauces',qty:0,unit:'kg',emoji:'🍝',minLimit:0.5},
+  {id:'alfredo',name:'Alfredo Pasta',roman:'Alfredo',cat:'Pasta & Sauces',qty:1,unit:'kg',emoji:'🍝',minLimit:0.5},
+  {id:'realmayo',name:'Real Mayonnaise',roman:'Real Mayo',cat:'Pasta & Sauces',qty:2,unit:'Liter',emoji:'🥫',minLimit:0.5},
+  {id:'tompaste',name:'Tomato Paste',roman:'Tamatar Paste',cat:'Pasta & Sauces',qty:0,unit:'kg',emoji:'🍅',minLimit:0.3},
+  {id:'dipitt',name:'Dipitt Hot Sauce',roman:'Dipitt Sauce',cat:'Pasta & Sauces',qty:1,unit:'pkt',emoji:'🌶️',minLimit:1},
+  {id:'tabasko',name:'Tabasco Sauce',roman:'Hot Tabasko',cat:'Pasta & Sauces',qty:1,unit:'bottle',emoji:'🌶️',minLimit:1},
+  {id:'vinegar',name:'Vinegar White',roman:'Sirka',cat:'Pasta & Sauces',qty:0,unit:'Liter',emoji:'🍶',minLimit:0.5},
+  {id:'sriracha',name:'Sriracha Sauce',roman:'Sriracha',cat:'Pasta & Sauces',qty:0,unit:'bottle',emoji:'🌶️',minLimit:1},
+  {id:'youngsmayo',name:'Youngs Mayo / Mama Sita',roman:'Youngs Mayo',cat:'Pasta & Sauces',qty:0,unit:'pcs',emoji:'🥫',minLimit:1},
+  {id:'peanuts',name:'Peanuts (Moongphali)',roman:'Moongphali',cat:'Dry Fruits & Nuts',qty:1.15,unit:'kg',emoji:'🥜',minLimit:0.3},
+  {id:'charomagaz',name:'Melon Seeds (Charo Magaz)',roman:'Charo Magaz',cat:'Dry Fruits & Nuts',qty:865,unit:'g',emoji:'🌰',minLimit:100},
+  {id:'kajoo',name:'Cashews (Kajoo)',roman:'Kajoo',cat:'Dry Fruits & Nuts',qty:1.28,unit:'kg',emoji:'🥜',minLimit:0.3},
+  {id:'til',name:'Sesame Seeds (Til)',roman:'Til',cat:'Dry Fruits & Nuts',qty:735,unit:'g',emoji:'🌿',minLimit:100},
+  {id:'badam',name:'Almonds (Badam)',roman:'Badam',cat:'Dry Fruits & Nuts',qty:1.3,unit:'kg',emoji:'🥜',minLimit:0.3},
+  {id:'kishmish',name:'Raisins (Kishmish)',roman:'Kishmish',cat:'Dry Fruits & Nuts',qty:1.45,unit:'kg',emoji:'🍇',minLimit:0.3},
+  {id:'coconutpow',name:'Coconut Powder',roman:'Cocnut Pow',cat:'Dry Fruits & Nuts',qty:750,unit:'g',emoji:'🥥',minLimit:100},
+  {id:'dates',name:'Dates (Khajoor)',roman:'Khajoor',cat:'Dry Fruits & Nuts',qty:2.7,unit:'g',emoji:'🌴',minLimit:500},
+  {id:'chanona',name:'Chickpeas (Chanona)',roman:'Chanona Daal',cat:'Dry Fruits & Nuts',qty:360,unit:'g',emoji:'🫘',minLimit:100},
+  {id:'mongdaal',name:'Moong Dal',roman:'Mong Daal',cat:'Dry Fruits & Nuts',qty:3,unit:'kg',emoji:'🫘',minLimit:1},
+  {id:'jamshirin',name:'Jam-e-Shirin',roman:'Jam-e-Shiren',cat:'Drinks',qty:2.3,unit:'Liter',emoji:'🍹',minLimit:0.5},
+  {id:'pepsi',name:'Pepsi',roman:'Pepsi',cat:'Drinks',qty:25,unit:'can',emoji:'🥤',minLimit:6},
+  {id:'pepsid',name:'Pepsi Diet',roman:'Pepsi Diet',cat:'Drinks',qty:29,unit:'can',emoji:'🥤',minLimit:6},
+  {id:'sup7',name:'7up',roman:'7up',cat:'Drinks',qty:80,unit:'can',emoji:'🥤',minLimit:12},
+  {id:'sup7d',name:'7up Diet',roman:'7up Diet',cat:'Drinks',qty:22,unit:'can',emoji:'🥤',minLimit:6},
+  {id:'mirinda',name:'Mirinda',roman:'Marinda',cat:'Drinks',qty:34,unit:'can',emoji:'🥤',minLimit:6},
+  {id:'sting',name:'Sting',roman:'Sting',cat:'Drinks',qty:33,unit:'can',emoji:'🥤',minLimit:6},
+  {id:'nextr',name:'Next Cola Red',roman:'Next Cola R',cat:'Drinks',qty:12,unit:'can',emoji:'🥤',minLimit:4},
+  {id:'nextg',name:'Next Cola Green',roman:'Next Cola G',cat:'Drinks',qty:10,unit:'can',emoji:'🥤',minLimit:4},
+  {id:'dew',name:'Mountain Dew',roman:'Dew',cat:'Drinks',qty:73,unit:'can',emoji:'🥤',minLimit:12},
+  {id:'slice',name:'Slice Juice',roman:'Slice',cat:'Drinks',qty:44,unit:'can',emoji:'🥤',minLimit:8},
+  {id:'aquafina',name:'Aquafina Water',roman:'Aquafina',cat:'Drinks',qty:27,unit:'bottle',emoji:'💧',minLimit:6},
+  {id:'abdubai',name:'Ab-e-Dubai Water',roman:'Ab-e-Dubai',cat:'Drinks',qty:12,unit:'bottle',emoji:'💧',minLimit:4},
+  {id:'fizzupw',name:'FizzUp White',roman:'FizzUp W',cat:'Drinks',qty:3,unit:'can',emoji:'🥤',minLimit:2},
+  {id:'fizzupg',name:'FizzUp Green',roman:'FizzUp G',cat:'Drinks',qty:5,unit:'can',emoji:'🥤',minLimit:2},
+  {id:'koyla',name:'Charcoal (Koyla)',roman:'Koyla',cat:'Packaging',qty:29,unit:'kg',emoji:'⬛',minLimit:5},
+  {id:'tissroll',name:'Tissue Roll',roman:'Tissue Roll',cat:'Packaging',qty:92,unit:'pcs',emoji:'🧻',minLimit:10},
+  {id:'tissbox',name:'Tissue Box',roman:'Tissue Box',cat:'Packaging',qty:71,unit:'pcs',emoji:'📦',minLimit:10},
+  {id:'dinetiss',name:'Dining Tissue',roman:'Dine Tissue',cat:'Packaging',qty:32,unit:'pcs',emoji:'🧻',minLimit:5},
+  {id:'toothpic',name:'Toothpicks',roman:'Tooth Pic',cat:'Packaging',qty:11,unit:'pkt',emoji:'🪥',minLimit:2},
+  {id:'alufoil',name:'Aluminum Foil',roman:'Alu Foil',cat:'Packaging',qty:1,unit:'pkt',emoji:'📦',minLimit:1},
+  {id:'jumbostk',name:'Jumbo Sticks',roman:'Jumbo Sticks',cat:'Packaging',qty:8,unit:'pkt',emoji:'📦',minLimit:2},
+  {id:'dtape',name:'Double Sided Tape',roman:'Double Side Tape',cat:'Packaging',qty:9,unit:'pcs',emoji:'📏',minLimit:2},
+  {id:'ptape',name:'Paper Tape',roman:'Paper Tape',cat:'Packaging',qty:3,unit:'pcs',emoji:'📏',minLimit:1},
+  {id:'tape',name:'Tape',roman:'Tape',cat:'Packaging',qty:3,unit:'pcs',emoji:'📏',minLimit:1},
+  {id:'wpaper',name:'White Paper',roman:'White Paper',cat:'Packaging',qty:250,unit:'g',emoji:'📄',minLimit:50},
+  {id:'plasticfoil',name:'Plastic Foil',roman:'Plastic Foil',cat:'Packaging',qty:0,unit:'pkt',emoji:'📦',minLimit:1},
+  {id:'btpaper',name:'Butter Paper',roman:'Butter Paper',cat:'Packaging',qty:0,unit:'pkt',emoji:'📄',minLimit:1},
+  {id:'duster',name:'Duster',roman:'Duster',cat:'Packaging',qty:0,unit:'pcs',emoji:'🧹',minLimit:1},
+  {id:'jalapeno',name:'Green Jalapenos',roman:'Green Jalapenos',cat:'Vegetables',qty:2.3,unit:'kg',emoji:'🫑',minLimit:0.5},
+  {id:'tomato',name:'Tomato (Tamatar)',roman:'Tamatar',cat:'Vegetables',qty:0,unit:'kg',emoji:'🍅',minLimit:1},
+  {id:'carrot',name:'Carrot (Gajar)',roman:'Gajar',cat:'Vegetables',qty:0,unit:'kg',emoji:'🥕',minLimit:0.5},
+  {id:'cabbage',name:'Cabbage',roman:'Bandgobi',cat:'Vegetables',qty:0,unit:'kg',emoji:'🥬',minLimit:0.5},
+  {id:'capsicum',name:'Capsicum',roman:'Shimla Mirch',cat:'Vegetables',qty:0,unit:'kg',emoji:'🫑',minLimit:0.5},
+  {id:'redonion',name:'Red Onion',roman:'Lal Pyaz',cat:'Vegetables',qty:0,unit:'kg',emoji:'🧅',minLimit:1},
+  {id:'greenonion',name:'Green Onion',roman:'Hara Pyaz',cat:'Vegetables',qty:0,unit:'kg',emoji:'🌿',minLimit:0.3},
+  {id:'garlic',name:'Garlic Fresh',roman:'Lehsan Fresh',cat:'Vegetables',qty:0,unit:'kg',emoji:'🧄',minLimit:0.3},
+  {id:'germchili',name:'German Chili',roman:'German Mirch',cat:'Vegetables',qty:0,unit:'kg',emoji:'🌶️',minLimit:0.3},
+  {id:'parsley',name:'Parsley',roman:'Parsley',cat:'Vegetables',qty:0,unit:'kg',emoji:'🌿',minLimit:0.1},
+  {id:'salleaf',name:'Salad Leaf',roman:'Salad Patta',cat:'Vegetables',qty:0,unit:'kg',emoji:'🥬',minLimit:0.2},
+  {id:'cucumber',name:'Cucumber (Kheera)',roman:'Kheera',cat:'Vegetables',qty:0,unit:'kg',emoji:'🥒',minLimit:0.5},
+  {id:'greenchili',name:'Green Chilli',roman:'Hari Mirch',cat:'Vegetables',qty:0,unit:'kg',emoji:'🌶️',minLimit:0.3},
+  {id:'potato',name:'Potatoes (Aloo)',roman:'Aloo',cat:'Vegetables',qty:0,unit:'kg',emoji:'🥔',minLimit:2},
+  {id:'mint',name:'Mint (Pudina)',roman:'Pudina',cat:'Vegetables',qty:0,unit:'kg',emoji:'🌿',minLimit:0.1},
+  {id:'lemon',name:'Lemon Fresh',roman:'Nimbu',cat:'Vegetables',qty:0,unit:'kg',emoji:'🍋',minLimit:0.3},
+  {id:'mateermirchi',name:'Mateer Mirchi',roman:'Mateer Mirchi',cat:'Vegetables',qty:0,unit:'kg',emoji:'🌶️',minLimit:0.3},
+  {id:'spinach',name:'Spinach (Palak)',roman:'Palak',cat:'Vegetables',qty:0,unit:'kg',emoji:'🥬',minLimit:0.3},
+  {id:'mooli',name:'Radish (Moolee)',roman:'Moolee',cat:'Vegetables',qty:0,unit:'kg',emoji:'🌿',minLimit:0.3},
+  {id:'paneer',name:'Paneer',roman:'Paneer',cat:'Vegetables',qty:0,unit:'kg',emoji:'🧀',minLimit:0.3},
+  {id:'mushroom',name:'Sliced Mushroom',roman:'Mushroom',cat:'Vegetables',qty:0,unit:'kg',emoji:'🍄',minLimit:0.2},
+  {id:'bolive',name:'Black Olive',roman:'Kala Zaitoon',cat:'Vegetables',qty:0,unit:'kg',emoji:'🫒',minLimit:0.2},
+  {id:'honey',name:'Honey (Shahad)',roman:'Shahad',cat:'Vegetables',qty:0,unit:'kg',emoji:'🍯',minLimit:0.3},
+  {id:'beans',name:'Beans',roman:'Lobiya',cat:'Vegetables',qty:250,unit:'g',emoji:'🫘',minLimit:50},
+  {id:'strawcust',name:'Strawberry Custard',roman:'Strawberry Custard',cat:'Fruits',qty:499,unit:'g',emoji:'🍓',minLimit:100},
+  {id:'vancust',name:'Vanilla Custard',roman:'Vanila Custard',cat:'Fruits',qty:150,unit:'g',emoji:'🍦',minLimit:50},
+  {id:'wafers',name:'Divine Wafers',roman:'Divine Wafers',cat:'Fruits',qty:8,unit:'pack',emoji:'🍪',minLimit:2},
+  {id:'fruitcock',name:'Fruit Cocktail',roman:'Fruit Cocktail',cat:'Fruits',qty:0,unit:'can',emoji:'🍹',minLimit:1},
+  {id:'apple',name:'Apple (Seb)',roman:'Seb',cat:'Fruits',qty:0,unit:'kg',emoji:'🍎',minLimit:1},
+  {id:'papita',name:'Papaya (Papita)',roman:'Papita',cat:'Fruits',qty:0,unit:'kg',emoji:'🍈',minLimit:0.5},
+  {id:'fcorange',name:'FC Orange / FC Lemon',roman:'FC Orange',cat:'Fruits',qty:0,unit:'pcs',emoji:'🍊',minLimit:2},
+  {id:'kewra',name:'Kewra Water',roman:'Kewra Culinary',cat:'Other',qty:21,unit:'pcs',emoji:'🌸',minLimit:3},
+  {id:'rosewater',name:'Rose Water',roman:'Rose Green',cat:'Other',qty:5,unit:'pcs',emoji:'🌹',minLimit:2},
+  {id:'greencol',name:'Green Colour',roman:'Green Colour',cat:'Other',qty:0,unit:'pcs',emoji:'🎨',minLimit:1},
+  {id:'purpcol',name:'Purple Colour',roman:'Purple Colour',cat:'Other',qty:0,unit:'pcs',emoji:'🎨',minLimit:1},
+];
+
+// ===== STORAGE =====
+function gI(){try{const s=localStorage.getItem('smv4_items');return s?JSON.parse(s):JSON.parse(JSON.stringify(DEFAULTS));}catch{return JSON.parse(JSON.stringify(DEFAULTS));}}
+function sI(d){localStorage.setItem('smv4_items',JSON.stringify(d));}
+function gH(){try{return JSON.parse(localStorage.getItem('smv4_hist')||'[]');}catch{return[];}}
+function sH(d){localStorage.setItem('smv4_hist',JSON.stringify(d));}
+function gO(){try{return JSON.parse(localStorage.getItem('smv4_open')||'{}');}catch{return{};}}
+function sO(d){localStorage.setItem('smv4_open',JSON.stringify(d));}
+
+function checkDay(){
+  const last=localStorage.getItem('smv4_day');
+  const today=new Date().toDateString();
+  if(last!==today){
+    const items=gI();const op={};items.forEach(i=>op[i.id]=i.qty);sO(op);
+    localStorage.setItem('smv4_day',today);
+    localStorage.setItem('smv4_p','0');localStorage.setItem('smv4_u','0');
+  }
+}
+function gStat(){return{p:+localStorage.getItem('smv4_p')||0,u:+localStorage.getItem('smv4_u')||0};}
+function aStat(t){const k=t==='p'?'smv4_p':'smv4_u';localStorage.setItem(k,String((+localStorage.getItem(k)||0)+1));}
+
+// ===== RENDER STOCK =====
+function renderChips(){
+  const items=gI();
+  const cats=['All',...new Set(items.map(i=>i.cat))];
+  document.getElementById('chips').innerHTML=cats.map(c=>`
+    <button class="chip ${c===activeCat?'on':''}" onclick="setCat('${c}')">${c==='All'?'🔵 All':(CE[c]||'📌')+' '+c}</button>`).join('');
+}
+function setCat(c){activeCat=c;renderChips();renderStock();}
+
+function renderStock(){
+  const items=gI();
+  const srch=document.getElementById('srch').value.toLowerCase();
+  let list=items;
+  if(activeCat!=='All')list=list.filter(i=>i.cat===activeCat);
+  if(srch)list=list.filter(i=>i.name.toLowerCase().includes(srch)||i.roman.toLowerCase().includes(srch));
+  const cats=[...new Set(list.map(i=>i.cat))];
+  let html='';let n=1;
+  cats.forEach(cat=>{
+    const ci=list.filter(i=>i.cat===cat);
+    if(!ci.length)return;
+    html+=`<div class="cath">${CE[cat]||'📌'} ${cat}</div>`;
+    ci.forEach(item=>{
+      const isZ=item.qty===0;
+      const isL=item.minLimit>0&&item.qty<item.minLimit;
+      html+=`<div class="icard ${isZ?'zero':isL?'low':''}">
+        <div class="itop">
+          <div class="ileft">
+            <div class="inum">#${n} · ${item.cat}</div>
+            <div class="iname">${item.emoji||'📦'} ${item.name}</div>
+            <div class="iroman">${item.roman}</div>
+            <div class="ibadges">
+              ${isL&&!isZ?'<span class="blow">LOW</span>':''}
+              ${isZ?'<span class="bzero">KHATAM</span>':''}
+            </div>
+          </div>
+          <div class="iright">
+            <div class="iqty ${isZ?'z':''}">${item.qty}</div>
+            <div class="iunit">${item.unit}</div>
+          </div>
+        </div>
+        <div class="iact">
+          <input type="number" class="qin" id="qi_${item.id}" placeholder="Qty" min="0" step="0.001">
+          <button class="bpur" onclick="doAct('${item.id}','p')">+ Purchase</button>
+          <button class="buse" onclick="doAct('${item.id}','u')">- Used</button>
+        </div>
+        <div class="ilim">
+          ⚡ Min Limit: <input type="number" class="lin" value="${item.minLimit||0}" min="0" step="0.01" onchange="updLim('${item.id}',this.value)"> ${item.unit} se kam ho to alert
+        </div>
+        <div class="iclosing">
+          <div class="iclbl">🔒 CLOSING STOCK &nbsp;<span>| Expected: <strong>${item.qty} ${item.unit}</strong></span></div>
+          <div class="iclrow">
+            <input type="number" class="clin" id="cl_${item.id}" placeholder="Closing Qty" min="0" step="0.001">
+            <button class="bclose" onclick="doClose('${item.id}')">🔒 Closing</button>
+          </div>
+        </div>
+      </div>`;
+      n++;
+    });
+  });
+  if(!html)html='<div style="text-align:center;color:var(--muted);padding:40px;font-size:.83rem;">Koi item nahi mila 🔍</div>';
+  document.getElementById('stockList').innerHTML=html;
+  updStats();
+}
+
+function doAct(id,type){
+  const el=document.getElementById('qi_'+id);
+  const qty=parseFloat(el.value);
+  if(!qty||qty<=0){toast('Quantity likhein!','err');return;}
+  const items=gI();const idx=items.findIndex(i=>i.id===id);const hist=gH();
+  if(type==='p'){
+    items[idx].qty=Math.round((items[idx].qty+qty)*1000)/1000;
+    aStat('p');
+    hist.unshift({id:Date.now(),iid:id,nm:items[idx].name,u:items[idx].unit,t:'purchase',q:qty,time:new Date().toLocaleString('en-PK')});
+    toast(`✅ +${qty} ${items[idx].unit} purchase hua`,'ok');
+  } else {
+    if(qty>items[idx].qty){toast('Itna stock nahi!','err');return;}
+    items[idx].qty=Math.round((items[idx].qty-qty)*1000)/1000;
+    aStat('u');
+    hist.unshift({id:Date.now(),iid:id,nm:items[idx].name,u:items[idx].unit,t:'use',q:qty,time:new Date().toLocaleString('en-PK')});
+    toast(`✅ -${qty} ${items[idx].unit} use hua`,'ok');
+  }
+  el.value='';sI(items);sH(hist);renderStock();
+}
+
+function doClose(id){
+  const el=document.getElementById('cl_'+id);
+  const cq=parseFloat(el.value);
+  if(isNaN(cq)||cq<0){toast('Closing qty likhein!','err');return;}
+  const items=gI();const idx=items.findIndex(i=>i.id===id);
+  const opening=gO();
+  const used=Math.round((items[idx].qty-cq)*1000)/1000;
+  const hist=gH();
+  hist.unshift({id:Date.now()+Math.random(),iid:id,nm:items[idx].name,u:items[idx].unit,t:'closing',q:cq,usedQ:used>0?used:0,openQ:opening[id]||0,time:new Date().toLocaleString('en-PK')});
+  items[idx].qty=cq;
+  el.value='';sI(items);sH(hist);
+  toast(`✅ ${items[idx].name}: ${cq} ${items[idx].unit} closing saved`,'ok');
+  renderStock();
+}
+
+function updLim(id,val){const items=gI();const idx=items.findIndex(i=>i.id===id);if(idx>=0){items[idx].minLimit=parseFloat(val)||0;sI(items);}}
+
+function updStats(){
+  const items=gI();
+  document.getElementById('stTotal').textContent=items.length;
+  const s=gStat();
+  document.getElementById('stPur').textContent=s.p;
+  document.getElementById('stUse').textContent=s.u;
+  // Low stock tab indicator
+  const lc=items.filter(i=>i.qty===0||(i.minLimit>0&&i.qty<i.minLimit)).length;
+  const tb=document.getElementById('tabLow');
+  if(tb)tb.classList.toggle('has-items',lc>0);
+}
+
+// ===== LOW STOCK =====
+function renderLowStock(){
+  const items=gI();
+  const low=items.filter(i=>i.qty===0||(i.minLimit>0&&i.qty<i.minLimit));
+  const el=document.getElementById('lowList');
+  if(!low.length){
+    el.innerHTML='<div style="text-align:center;padding:40px;"><div style="font-size:2rem;margin-bottom:8px;">✅</div><div style="color:var(--green);font-size:.86rem;font-weight:700;">Sab items theek hain!</div><div style="color:var(--muted);font-size:.72rem;margin-top:3px;">Koi item khatam ya limit se kam nahi</div></div>';
+    return;
+  }
+  const zeros=low.filter(i=>i.qty===0);
+  const warns=low.filter(i=>i.qty>0&&i.minLimit>0&&i.qty<i.minLimit);
+  let html='';
+  if(zeros.length){
+    html+=`<div style="font-size:.62rem;font-weight:700;letter-spacing:1.2px;color:var(--red);text-transform:uppercase;margin:0 0 8px;border-bottom:1px solid var(--border);padding-bottom:5px;">❌ Bilkul Khatam — ${zeros.length} items</div>`;
+    zeros.forEach(i=>{
+      html+=`<div class="lscard" style="flex-direction:column;align-items:stretch;gap:8px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;">
+          <div><div class="lsname">${i.emoji} ${i.name}</div><div class="lsmeta">${i.roman} · ${i.cat}</div></div>
+          <div style="text-align:right;"><div class="lsqty red">0 ${i.unit}</div><div class="lsmin">Min: ${i.minLimit||0}</div></div>
+        </div>
+        <div style="display:flex;gap:6px;align-items:center;">
+          <input type="number" id="lsq_${i.id}" placeholder="Qty" min="0" step="0.001" style="flex:1;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:7px 9px;font-family:inherit;font-size:.82rem;color:var(--text);outline:none;text-align:center;">
+          <button onclick="lsPurchase('${i.id}')" style="background:var(--green);color:#fff;border:none;border-radius:8px;padding:8px 14px;font-family:inherit;font-size:.75rem;font-weight:700;cursor:pointer;white-space:nowrap;">+ Purchase</button>
+        </div>
+      </div>`;
+    });
+  }
+  if(warns.length){
+    html+=`<div style="font-size:.62rem;font-weight:700;letter-spacing:1.2px;color:var(--orange);text-transform:uppercase;margin:12px 0 8px;border-bottom:1px solid var(--border);padding-bottom:5px;">⚠️ Kam Ho Raha Hai — ${warns.length} items</div>`;
+    warns.forEach(i=>{
+      const pct=Math.min(Math.round((i.qty/i.minLimit)*100),100);
+      html+=`<div class="lscard warn" style="flex-direction:column;align-items:stretch;gap:8px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;">
+          <div style="flex:1"><div class="lsname">${i.emoji} ${i.name}</div><div class="lsmeta">${i.roman} · ${i.cat}</div>
+          <div class="pbar" style="margin-top:5px;"><div class="pbar-fill" style="width:${pct}%"></div></div>
+          <div style="font-size:.6rem;color:var(--muted);margin-top:2px;">${pct}% bacha hai</div></div>
+          <div style="margin-left:10px;text-align:right;"><div class="lsqty ora">${i.qty} ${i.unit}</div><div class="lsmin">Min: ${i.minLimit}</div></div>
+        </div>
+        <div style="display:flex;gap:6px;align-items:center;">
+          <input type="number" id="lsq_${i.id}" placeholder="Qty" min="0" step="0.001" style="flex:1;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:7px 9px;font-family:inherit;font-size:.82rem;color:var(--text);outline:none;text-align:center;">
+          <button onclick="lsPurchase('${i.id}')" style="background:var(--green);color:#fff;border:none;border-radius:8px;padding:8px 14px;font-family:inherit;font-size:.75rem;font-weight:700;cursor:pointer;white-space:nowrap;">+ Purchase</button>
+        </div>
+      </div>`;
+    });
+  }
+  el.innerHTML=html;
+}
+
+// ===== LOW STOCK PURCHASE =====
+function lsPurchase(id){
+  const el=document.getElementById('lsq_'+id);
+  const qty=parseFloat(el.value);
+  if(!qty||qty<=0){toast('Quantity likhein!','err');return;}
+  const items=gI();const idx=items.findIndex(i=>i.id===id);const hist=gH();
+  items[idx].qty=Math.round((items[idx].qty+qty)*1000)/1000;
+  aStat('p');
+  hist.unshift({id:Date.now(),iid:id,nm:items[idx].name,u:items[idx].unit,t:'purchase',q:qty,time:new Date().toLocaleString('en-PK')});
+  el.value='';sI(items);sH(hist);
+  toast(`✅ +${qty} ${items[idx].unit} purchase hua`,'ok');
+  renderLowStock();updStats();
+}
+
+// ===== HISTORY =====
+function renderHistory(){
+  const hist=gH();const filt=document.getElementById('hfilt').value;
+  const list=filt==='all'?hist:hist.filter(h=>h.t===filt);
+  const el=document.getElementById('histList');
+  if(!list.length){el.innerHTML='<div style="text-align:center;color:var(--muted);padding:40px;font-size:.8rem;">Koi history nahi 📋</div>';return;}
+  el.innerHTML=list.map(h=>`<div class="hitem">
+    <div><div class="hname">${h.nm}</div><div class="hmeta">🕐 ${h.time}</div>
+    <div class="htype" style="color:${h.t==='purchase'?'var(--green)':h.t==='closing'?'var(--purple)':'var(--red)'}">
+      ${h.t==='purchase'?'➕ Purchase':h.t==='closing'?'🔒 Closing':'➖ Use'}</div></div>
+    <div style="text-align:right;">
+      <div class="hqty ${h.t==='purchase'?'p':h.t==='closing'?'c':'u'}">${h.t==='purchase'?'+':h.t==='closing'?'✓':'-'}${h.q} ${h.u}</div>
+      ${h.t==='closing'&&h.usedQ>0?`<div style="font-size:.63rem;color:var(--red);">Used: ${h.usedQ} ${h.u}</div>`:''}
+      <button class="hdel" onclick="delH(${h.id})">🗑️</button>
+    </div>
+  </div>`).join('');
+}
+
+function delH(id){pendingId=id;pendingAll=false;document.getElementById('pwdIn').value='';openOv('pwdOv');}
+function askDelAll(){pendingAll=true;pendingId=null;document.getElementById('pwdIn').value='';openOv('pwdOv');}
+function checkPwd(){
+  if(document.getElementById('pwdIn').value!==PWD){toast('❌ Galat password!','err');return;}
+  if(pendingAll){sH([]);toast('✅ Poori history delete ho gayi','ok');}
+  else if(pendingId){sH(gH().filter(h=>h.id!==pendingId));toast('✅ Delete ho gayi','ok');}
+  closeOv('pwdOv');renderHistory();
+}
+
+// ===== SUMMARY =====
+let sumFilter='all';
+function setSumFilter(f){
+  sumFilter=f;
+  // update button styles
+  ['all','purchase','use'].forEach(x=>{
+    const btn=document.getElementById('sf'+x.charAt(0).toUpperCase()+x.slice(1));
+    if(!btn)return;
+    if(x==='all'&&f==='all'){btn.style.background='var(--gold)';btn.style.color='#000';btn.style.border='none';}
+    else if(x==='purchase'&&f==='purchase'){btn.style.background='var(--green)';btn.style.color='#fff';btn.style.border='none';}
+    else if(x==='use'&&f==='use'){btn.style.background='var(--red)';btn.style.color='#fff';btn.style.border='none';}
+    else{btn.style.background='var(--card)';btn.style.border='1px solid var(--border)';
+      btn.style.color=x==='purchase'?'var(--green)':x==='use'?'var(--red)':'var(--text)';}
+  });
+  renderSummary();
+}
+
+function renderSummary(){
+  const items=gI();const opening=gO();
+  const today=new Date().toLocaleDateString('en-PK',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+  const hist=gH();
+  const tHist=hist.filter(h=>{try{return new Date(h.time).toDateString()===new Date().toDateString();}catch{return false;}});
+  const cats=[...new Set(items.map(i=>i.cat))];
+
+  // ---- PURCHASE FILTER ----
+  if(sumFilter==='purchase'){
+    const purItems=[];
+    items.forEach(item=>{
+      const ph=tHist.filter(h=>h.t==='purchase'&&h.iid===item.id);
+      if(ph.length>0){
+        const total=ph.reduce((s,h)=>s+h.q,0);
+        purItems.push({item,total,entries:ph});
+      }
+    });
+    let html=`<div style="background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.3);border-radius:12px;padding:11px 13px;margin-bottom:12px;">
+      <div style="font-size:.78rem;font-weight:700;color:var(--green);margin-bottom:3px;">➕ Aaj Purchase Hue Items</div>
+      <div style="font-size:.68rem;color:var(--muted);">${today}</div>
+    </div>`;
+    if(!purItems.length){
+      html+='<div style="text-align:center;padding:30px;color:var(--muted);font-size:.82rem;">Aaj koi purchase nahi hua 📦</div>';
+    } else {
+      html+=`<div style="font-size:.65rem;color:var(--muted);margin-bottom:8px;font-weight:600;">${purItems.length} items purchase hue</div>`;
+      const byCat={};
+      purItems.forEach(({item,total,entries})=>{
+        if(!byCat[item.cat])byCat[item.cat]=[];
+        byCat[item.cat].push({item,total,entries});
+      });
+      Object.keys(byCat).forEach(cat=>{
+        html+=`<div class="smcard"><div class="smtitle">${CE[cat]||'📌'} ${cat}</div>`;
+        byCat[cat].forEach(({item,total,entries})=>{
+          html+=`<div style="padding:6px 0;border-bottom:1px solid rgba(255,255,255,.04);">
+            <div style="display:flex;justify-content:space-between;align-items:center;">
+              <span style="font-size:.82rem;font-weight:600;">${item.emoji} ${item.name}</span>
+              <span style="font-size:.9rem;font-weight:800;color:var(--green);">+${total} ${item.unit}</span>
+            </div>
+            <div style="font-size:.65rem;color:var(--muted);margin-top:2px;">Abhi stock: ${item.qty} ${item.unit}</div>
+            ${entries.length>1?`<div style="font-size:.62rem;color:var(--muted);margin-top:2px;">${entries.map(e=>`${e.q} ${item.unit} — ${e.time.split(',')[1]||e.time}`).join(' | ')}</div>`:''}
+          </div>`;
+        });
+        html+='</div>';
+      });
+    }
+    document.getElementById('sumContent').innerHTML=html;
+    return;
+  }
+
+  // ---- USE FILTER ----
+  if(sumFilter==='use'){
+    const useItems=[];
+    items.forEach(item=>{
+      const uh=tHist.filter(h=>h.t==='use'&&h.iid===item.id);
+      if(uh.length>0){
+        const total=uh.reduce((s,h)=>s+h.q,0);
+        useItems.push({item,total,entries:uh});
+      }
+    });
+    let html=`<div style="background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.3);border-radius:12px;padding:11px 13px;margin-bottom:12px;">
+      <div style="font-size:.78rem;font-weight:700;color:var(--red);margin-bottom:3px;">➖ Aaj Use Hue Items</div>
+      <div style="font-size:.68rem;color:var(--muted);">${today}</div>
+    </div>`;
+    if(!useItems.length){
+      html+='<div style="text-align:center;padding:30px;color:var(--muted);font-size:.82rem;">Aaj koi item use nahi hua 📋</div>';
+    } else {
+      html+=`<div style="font-size:.65rem;color:var(--muted);margin-bottom:8px;font-weight:600;">${useItems.length} items use hue</div>`;
+      const byCat={};
+      useItems.forEach(({item,total,entries})=>{
+        if(!byCat[item.cat])byCat[item.cat]=[];
+        byCat[item.cat].push({item,total,entries});
+      });
+      Object.keys(byCat).forEach(cat=>{
+        html+=`<div class="smcard"><div class="smtitle">${CE[cat]||'📌'} ${cat}</div>`;
+        byCat[cat].forEach(({item,total,entries})=>{
+          html+=`<div style="padding:6px 0;border-bottom:1px solid rgba(255,255,255,.04);">
+            <div style="display:flex;justify-content:space-between;align-items:center;">
+              <span style="font-size:.82rem;font-weight:600;">${item.emoji} ${item.name}</span>
+              <span style="font-size:.9rem;font-weight:800;color:var(--red);">-${total} ${item.unit}</span>
+            </div>
+            <div style="font-size:.65rem;color:var(--muted);margin-top:2px;">Abhi stock: ${item.qty} ${item.unit}</div>
+            ${entries.length>1?`<div style="font-size:.62rem;color:var(--muted);margin-top:2px;">${entries.map(e=>`${e.q} ${item.unit} — ${e.time.split(',')[1]||e.time}`).join(' | ')}</div>`:''}
+          </div>`;
+        });
+        html+='</div>';
+      });
+    }
+    document.getElementById('sumContent').innerHTML=html;
+    return;
+  }
+
+  // ---- ALL (default) ----
+  let html=`<div style="font-size:.72rem;color:var(--muted);margin-bottom:11px;">📅 ${today}</div>
+  <div class="smcard"><div class="smtitle">📊 Aaj Ka Hasab</div>
+    <div class="smrow"><span>Purchase Transactions</span><span class="smval" style="color:var(--green)">${tHist.filter(h=>h.t==='purchase').length}</span></div>
+    <div class="smrow"><span>Use Transactions</span><span class="smval" style="color:var(--red)">${tHist.filter(h=>h.t==='use').length}</span></div>
+    <div class="smrow"><span>Closing Done</span><span class="smval" style="color:var(--purple)">${tHist.filter(h=>h.t==='closing').length}</span></div>
+    <div class="smrow"><span>Low Stock Items</span><span class="smval" style="color:var(--orange)">${items.filter(i=>i.minLimit>0&&i.qty<i.minLimit).length}</span></div>
+    <div class="smrow"><span>Khatam Items</span><span class="smval" style="color:var(--red)">${items.filter(i=>i.qty===0).length}</span></div>
+  </div>`;
+  cats.forEach(cat=>{
+    const ci=items.filter(i=>i.cat===cat);
+    html+=`<div class="smcard"><div class="smtitle">${CE[cat]||'📌'} ${cat}</div>
+      ${ci.map(item=>{
+        const op=opening[item.id]||0;
+        const used=Math.round((op-item.qty)*1000)/1000;
+        return`<div class="smrow"><span style="flex:1.4">${item.name}</span>
+          <span class="smval" style="color:var(--gold2);min-width:80px;text-align:right">${item.qty} ${item.unit}</span>
+          ${used>0?`<span class="smval" style="color:var(--red);min-width:68px;text-align:right">-${used}</span>`:'<span style="min-width:68px"></span>'}
+        </div>`;}).join('')}
+    </div>`;
+  });
+  document.getElementById('sumContent').innerHTML=html;
+  const txt=genTxt(items,opening,today);
+  window._rpt=txt;
+}
+
+function genTxt(items,opening,today){
+  let t=`================================\nRESTAURANT STORE - DAILY REPORT\n${today}\n================================\n\n`;
+  const cats=[...new Set(items.map(i=>i.cat))];
+  cats.forEach(cat=>{
+    t+=`--- ${cat.toUpperCase()} ---\n`;
+    items.filter(i=>i.cat===cat).forEach(item=>{
+      const op=opening[item.id]||0;
+      const used=Math.round((op-item.qty)*1000)/1000;
+      t+=`${item.name} (${item.roman})\n  Opening: ${op} ${item.unit}  |  Closing: ${item.qty} ${item.unit}  |  Used: ${used>0?used:0} ${item.unit}\n`;
+    });
+    t+='\n';
+  });
+  return t;
+}
+function copyReport(){renderSummary();const txt=window._rpt||'';if(navigator.clipboard)navigator.clipboard.writeText(txt).then(()=>toast('✅ Copy ho gayi! WPS mein paste karo','ok')).catch(()=>fbCp(txt));else fbCp(txt);}
+function fbCp(t){const a=document.createElement('textarea');a.value=t;document.body.appendChild(a);a.select();document.execCommand('copy');document.body.removeChild(a);toast('✅ Copy ho gayi!','ok');}
+
+// ===== ADD ITEM =====
+function selU(btn,u){unitVal=u;document.querySelectorAll('.ubtn').forEach(b=>b.classList.remove('on'));btn.classList.add('on');}
+function addItem(){
+  const name=document.getElementById('niName').value.trim();
+  const roman=document.getElementById('niRoman').value.trim()||name;
+  const cat=document.getElementById('niCat').value;
+  const qty=parseFloat(document.getElementById('niQty').value)||0;
+  const lim=parseFloat(document.getElementById('niLim').value)||0;
+  if(!name){toast('Item naam likhein!','err');return;}
+  const items=gI();
+  if(items.some(i=>i.name.toLowerCase()===name.toLowerCase())){toast('Yeh item pehle se hai!','err');return;}
+  items.push({id:name.toLowerCase().replace(/\s+/g,'_')+'_'+Date.now(),name,roman,cat,qty,unit:unitVal,emoji:CE[cat]||'📦',minLimit:lim});
+  sI(items);
+  document.getElementById('niName').value='';document.getElementById('niRoman').value='';
+  document.getElementById('niQty').value='';document.getElementById('niLim').value='';
+  toast(`✅ ${name} add ho gaya!`,'ok');
+  renderChips();renderStock();
+}
+
+// ===== EXPORT/IMPORT =====
+function exportData(){
+  const d={items:gI(),history:gH(),opening:gO(),date:new Date().toISOString(),ver:'v4'};
+  const b=new Blob([JSON.stringify(d,null,2)],{type:'application/json'});
+  const u=URL.createObjectURL(b);const a=document.createElement('a');
+  a.href=u;a.download=`store-backup-${new Date().toISOString().split('T')[0]}.json`;
+  document.body.appendChild(a);a.click();document.body.removeChild(a);URL.revokeObjectURL(u);
+  toast('✅ Data export ho gaya!','ok');
+}
+function importData(e){
+  const f=e.target.files[0];if(!f)return;
+  const r=new FileReader();
+  r.onload=ev=>{try{const d=JSON.parse(ev.target.result);if(d.items)sI(d.items);if(d.history)sH(d.history);if(d.opening)sO(d.opening);toast('✅ Data import ho gaya!','ok');renderChips();renderStock();}catch{toast('❌ File sahi nahi!','err');}};
+  r.readAsText(f);e.target.value='';
+}
+
+// ===== AI DETAIL =====
+async function showDet(id){
+  const item=gI().find(i=>i.id===id);
+  document.getElementById('detContent').innerHTML=`
+    <div style="font-size:1.15rem;font-weight:800;margin-bottom:3px;">${item.emoji} ${item.name}</div>
+    <div style="font-size:.72rem;color:var(--gold);margin-bottom:9px;">${CE[item.cat]||''} ${item.cat}</div>
+    <div style="background:var(--bg);border-radius:10px;padding:10px 12px;margin-bottom:8px;display:flex;justify-content:space-between;">
+      <span style="color:var(--muted);font-size:.76rem;">Maujuda Stock</span>
+      <span style="font-weight:800;font-size:1.05rem;color:var(--gold2);">${item.qty} ${item.unit}</span>
+    </div>
+    <div style="background:var(--bg);border-radius:10px;padding:10px 12px;margin-bottom:11px;display:flex;justify-content:space-between;">
+      <span style="color:var(--muted);font-size:.76rem;">Min Limit</span>
+      <span style="font-weight:700;color:var(--red);">${item.minLimit||0} ${item.unit}</span>
+    </div>
+    ${!isOnline?'<div style="color:var(--muted);font-size:.78rem;padding:8px 0;">📵 AI info ke liye internet chahiye</div>':`
+    <div class="ail" id="aiL"><div class="aidot"></div><div class="aidot"></div><div class="aidot"></div><span>AI info la raha hai...</span></div>
+    <div id="aiR"></div>`}`;
+  openOv('detOv');
+  if(!isOnline)return;
+  try{
+    const r=await fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:280,messages:[{role:"user",content:`Describe "${item.name}" as restaurant ingredient in simple Roman Urdu (max 60 words): kya hai, kaise use hota hai, kaise store karein. Plain text only.`}]})});
+    const d=await r.json();
+    document.getElementById('aiL').style.display='none';
+    document.getElementById('aiR').innerHTML=`<div class="aibox">🤖 ${d.content?.[0]?.text||'Info nahi mili.'}</div>`;
+  }catch{document.getElementById('aiL').style.display='none';document.getElementById('aiR').innerHTML=`<div class="aibox" style="color:var(--muted)">AI se connect nahi hua.</div>`;}
+}
+
+// Chat feature removed
+
+
+// ===== EXCEL EXPORT =====
+function exportExcel(){
+  window._exportMode='excel';
+  document.getElementById('exportTypeSel').style.display='block';
+}
+function exportPDF(){
+  window._exportMode='pdf';
+  document.getElementById('exportTypeSel').style.display='block';
+}
+
+function doExport(type, fmt){
+  document.getElementById('exportTypeSel').style.display='none';
+  const items=gI();
+  const opening=gO();
+  const hist=gH();
+  const today=new Date().toLocaleDateString('en-PK',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+  const dateStr=new Date().toISOString().split('T')[0];
+
+  if(fmt==='excel'){
+    // Build CSV that Excel/WPS can open
+    let csv='';
+    if(type==='today'){
+      csv='AAJ KA HISAB - '+today+'
+
+';
+      csv+='Item Naam,Roman Naam,Category,Opening Stock,Unit,Aaj Purchase,Aaj Use,Closing Stock,Used Total
+';
+      const cats=[...new Set(items.map(i=>i.cat))];
+      cats.forEach(cat=>{
+        const ci=items.filter(i=>i.cat===cat);
+        ci.forEach(item=>{
+          const op=opening[item.id]||0;
+          const todayH=hist.filter(h=>{
+            try{return new Date(h.time).toDateString()===new Date().toDateString() && h.iid===item.id;}catch{return false;}
+          });
+          const todayPur=todayH.filter(h=>h.t==='purchase').reduce((s,h)=>s+h.q,0);
+          const todayUse=todayH.filter(h=>h.t==='use').reduce((s,h)=>s+h.q,0);
+          const usedTotal=Math.round((op-item.qty)*1000)/1000;
+          csv+=`"${item.name}","${item.roman}","${cat}",${op},"${item.unit}",${todayPur},${todayUse},${item.qty},${usedTotal>0?usedTotal:0}
+`;
+        });
+      });
+    } else {
+      csv='POORA STOCK - '+today+'
+
+';
+      csv+='Item Naam,Roman Naam,Category,Maujuda Qty,Unit,Min Limit,Status
+';
+      const cats=[...new Set(items.map(i=>i.cat))];
+      cats.forEach(cat=>{
+        const ci=items.filter(i=>i.cat===cat);
+        ci.forEach(item=>{
+          const status=item.qty===0?'KHATAM':item.minLimit>0&&item.qty<item.minLimit?'KAM':'OK';
+          csv+=`"${item.name}","${item.roman}","${cat}",${item.qty},"${item.unit}",${item.minLimit||0},"${status}"
+`;
+        });
+      });
+    }
+    // Add BOM for proper Urdu/encoding in WPS
+    const bom='﻿';
+    const blob=new Blob([bom+csv],{type:'text/csv;charset=utf-8;'});
+    const url=URL.createObjectURL(blob);
+    const a=document.createElement('a');
+    const fname=type==='today'?`aaj-ka-hisab-${dateStr}.csv`:`poora-stock-${dateStr}.csv`;
+    a.href=url;a.download=fname;
+    document.body.appendChild(a);a.click();document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    toast('✅ Excel file download ho gayi!','ok');
+  }
+
+  if(fmt==='pdf'){
+    const items2=gI();
+    const cats=[...new Set(items2.map(i=>i.cat))];
+    let html='<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Store Report</title>';
+    html+='<style>';
+    html+='body{font-family:Arial,sans-serif;font-size:11px;color:#000;margin:15px;}';
+    html+='h1{font-size:15px;text-align:center;margin-bottom:3px;color:#8B6914;}';
+    html+='.sub{text-align:center;font-size:10px;color:#666;margin-bottom:12px;}';
+    html+='table{width:100%;border-collapse:collapse;margin-bottom:12px;}';
+    html+='th{background:#c8960c;color:#fff;padding:5px 7px;text-align:left;font-size:10px;}';
+    html+='td{padding:4px 7px;border-bottom:1px solid #eee;font-size:10px;}';
+    html+='tr:nth-child(even){background:#fafafa;}';
+    html+='.cat-head{background:#1e1c12;color:#f0b429;font-weight:bold;padding:5px 7px;margin-top:8px;font-size:10px;}';
+    html+='.badge-ok{color:green;font-weight:700;}';
+    html+='.badge-low{color:orange;font-weight:700;}';
+    html+='.badge-zero{color:red;font-weight:700;}';
+    html+='@media print{body{margin:5px;}.no-print{display:none;}}';
+    html+='</style></head><body>';
+    html+=`<div class="no-print" style="text-align:center;margin-bottom:12px;"><button onclick="window.print()" style="background:#c8960c;color:#000;border:none;padding:8px 20px;border-radius:6px;font-size:12px;font-weight:700;cursor:pointer;">🖨️ Print / PDF Save Karo</button>&nbsp;<button onclick="window.close()" style="background:#eee;border:none;padding:8px 16px;border-radius:6px;cursor:pointer;">✕ Band Karo</button></div>`;
+    html+=`<h1>🍽️ Soulful Bites — Store Report</h1><div class="sub">${today}</div>`;
+
+    if(type==='today'){
+      html+='<table><tr><th>Item</th><th>Category</th><th>Opening</th><th>Purchase</th><th>Use</th><th>Closing</th><th>Used</th></tr>';
+      cats.forEach(cat=>{
+        const ci=items2.filter(i=>i.cat===cat);
+        html+=`<tr><td colspan="7" class="cat-head">${CE[cat]||''} ${cat}</td></tr>`;
+        ci.forEach(item=>{
+          const op=opening[item.id]||0;
+          const todayH=hist.filter(h=>{try{return new Date(h.time).toDateString()===new Date().toDateString()&&h.iid===item.id;}catch{return false;}});
+          const tPur=todayH.filter(h=>h.t==='purchase').reduce((s,h)=>s+h.q,0);
+          const tUse=todayH.filter(h=>h.t==='use').reduce((s,h)=>s+h.q,0);
+          const usedTot=Math.round((op-item.qty)*1000)/1000;
+          html+=`<tr><td><b>${item.name}</b><br><span style="color:#888;font-size:9px;">${item.roman}</span></td><td>${cat}</td><td>${op} ${item.unit}</td><td style="color:green;">${tPur>0?'+'+tPur+' '+item.unit:'-'}</td><td style="color:red;">${tUse>0?'-'+tUse+' '+item.unit:'-'}</td><td><b>${item.qty} ${item.unit}</b></td><td>${usedTot>0?usedTot+' '+item.unit:'-'}</td></tr>`;
+        });
+      });
+      html+='</table>';
+    } else {
+      html+='<table><tr><th>Item</th><th>Category</th><th>Qty</th><th>Unit</th><th>Min Limit</th><th>Status</th></tr>';
+      cats.forEach(cat=>{
+        const ci=items2.filter(i=>i.cat===cat);
+        html+=`<tr><td colspan="6" class="cat-head">${CE[cat]||''} ${cat}</td></tr>`;
+        ci.forEach(item=>{
+          const st=item.qty===0?'<span class="badge-zero">KHATAM</span>':item.minLimit>0&&item.qty<item.minLimit?'<span class="badge-low">KAM</span>':'<span class="badge-ok">OK</span>';
+          html+=`<tr><td><b>${item.name}</b><br><span style="color:#888;font-size:9px;">${item.roman}</span></td><td>${cat}</td><td><b>${item.qty}</b></td><td>${item.unit}</td><td>${item.minLimit||0} ${item.unit}</td><td>${st}</td></tr>`;
+        });
+      });
+      html+='</table>';
+    }
+    html+='</body></html>';
+    const w=window.open('','_blank','width=900,height=700');
+    if(w){w.document.write(html);w.document.close();}
+    else toast('Popup block hua — browser mein allow karein','err');
+  }
+}
+
+// ===== HELPERS =====
+function showTab(name,btn){
+  document.querySelectorAll('.sec').forEach(s=>s.classList.remove('active'));
+  document.getElementById('sec-'+name).classList.add('active');
+  document.querySelectorAll('.tab').forEach(b=>b.classList.remove('active'));
+  if(btn)btn.classList.add('active');
+  if(name==='stock'){renderChips();renderStock();}
+  if(name==='lowstock')renderLowStock();
+  if(name==='history')renderHistory();
+  if(name==='summary')renderSummary();
+
+}
+function openOv(id){document.getElementById(id).classList.add('open');}
+function closeOv(id){document.getElementById(id).classList.remove('open');}
+document.querySelectorAll('.ov').forEach(o=>o.addEventListener('click',function(e){if(e.target===this)closeOv(this.id);}));
+function toast(msg,type=''){const t=document.getElementById('toast');t.textContent=msg;t.className=`toast show ${type}`;setTimeout(()=>t.className='toast',2500);}
+function updTime(){const n=new Date();document.getElementById('hDate').textContent=n.toLocaleDateString('en-PK',{weekday:'short',day:'numeric',month:'short',year:'numeric'});document.getElementById('hTime').textContent=n.toLocaleTimeString('en-PK',{hour:'2-digit',minute:'2-digit',hour12:true});}
+
+window.addEventListener('online',()=>{isOnline=true;document.getElementById('obar').classList.remove('show');});
+window.addEventListener('offline',()=>{isOnline=false;document.getElementById('obar').classList.add('show');});
+if(!navigator.onLine)document.getElementById('obar').classList.add('show');
+
+window.addEventListener('beforeinstallprompt',e=>{
+  e.preventDefault();
+  deferredPrompt=e;
+  document.getElementById('ibar').classList.add('show');
+});
+window.addEventListener('appinstalled',()=>{
+  document.getElementById('ibar').classList.remove('show');
+  deferredPrompt=null;
+  toast('✅ App install ho gayi!','ok');
+});
+function installApp(){
+  if(!deferredPrompt)return;
+  deferredPrompt.prompt();
+  deferredPrompt.userChoice.then(choice=>{
+    if(choice.outcome==='accepted'){
+      toast('✅ App install ho rahi hai...','ok');
+    }
+    deferredPrompt=null;
+    document.getElementById('ibar').classList.remove('show');
+  });
+}
+if('serviceWorker'in navigator){
+  window.addEventListener('load',()=>{
+    navigator.serviceWorker.register('sw.js').catch(()=>{});
+  });
+}
+
+// ===== INIT =====
+// On first load, if no data saved yet, pre-load all default items
+(function(){
+  const existing = localStorage.getItem('smv4_items');
+  if(!existing){
+    // First time - save all default items to localStorage
+    localStorage.setItem('smv4_items', JSON.stringify(JSON.parse(JSON.stringify(DEFAULTS))));
+    // Save opening stock
+    const op={};
+    DEFAULTS.forEach(i=>op[i.id]=i.qty);
+    localStorage.setItem('smv4_open', JSON.stringify(op));
+    localStorage.setItem('smv4_day', new Date().toDateString());
+    localStorage.setItem('smv4_p','0');
+    localStorage.setItem('smv4_u','0');
+  }
+})();
+checkDay();updTime();renderChips();renderStock();
+setInterval(updTime,30000);
+</script>
+</body>
+</html>
